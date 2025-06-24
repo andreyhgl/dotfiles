@@ -9,5 +9,5 @@ else
 # works with .zshrc
 #if [ -f "${HOME}/.zshrc" ]; then
   setopt PROMPT_SUBST
-  PROMPT='%~%F{cyan}$(parse_git_branch)%f $ '
+  PROMPT='%2~%F{cyan}$(parse_git_branch)%f $ '
 fi
