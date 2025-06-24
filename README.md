@@ -1,13 +1,13 @@
 # README
 
-Contains configurations for git, tmux, shell & vim
+Contains configurations for git, tmux, shell
 
 ## Setup
 
 ```sh
 folder=".dotfiles"
 cd
-git clone git@github.com:flerpan01/dotfiles.git ${folder} && cd ${folder}
+git clone git@github.com:andreyhgl/dotfiles.git ${folder} && cd ${folder}
 ./install.sh
 ```
 
