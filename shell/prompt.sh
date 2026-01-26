@@ -9,5 +9,9 @@ else
 # works with .zshrc
 #if [ -f "${HOME}/.zshrc" ]; then
   setopt PROMPT_SUBST
-  PROMPT='%2~%F{cyan}$(parse_git_branch)%f $ '
+  #%n = username
+  #%M = full machine/hostname
+  #%m = short machine/hostname
+  #%~ current history, %2~ two directories
+  PROMPT='[andy@aces %2~]%F{cyan}$(parse_git_branch)%f $ '
 fi
