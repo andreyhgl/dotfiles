@@ -25,6 +25,37 @@ $ git log
 git log --graph --pretty=format:'%C(auto)%h %C(cyan)(%cr)%Creset%C(auto)%d%Creset %s'
 ```
 
+## Sublime
+
+### LSP
+
+Install [language server protocols](https://lsp.sublimetext.io/) (LSP):
+
++ Open the command palette (`cmd+shift+p`) and run `Packages Control: Install Packages` (type `install`), then run:
+	+  `LSP`
+	
++ [R](https://github.com/REditorSupport/sublime-ide-r#installation):
+	+  `R-IDE`
+	+  `LSP-R`
+
+	```r
+	# install R. install package languageserver
+	install.packages("languageserver")
+	```
+
++ bash:
+	+ `LSP-bash`
+	+ shellcheck:
+	
+	```sh
+	# on macOS
+	brew install shellcheck
+	```
+
+### Packages
+
+
+
 ---
 
 <!--
