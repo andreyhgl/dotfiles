@@ -25,6 +25,19 @@ $ git log
 git log --graph --pretty=format:'%C(auto)%h %C(cyan)(%cr)%Creset%C(auto)%d%Creset %s'
 ```
 
+## Tmux
+
+Navigate between pane w/ `Ctrl` + `hjkl`, wim-style.
+
+```sh
+# switch panes using Ctrl+hjkl (vim-style) without prefix
+# -n = no prefix
+bind -n C-h select-pane -L
+bind -n C-l select-pane -R
+bind -n C-k select-pane -U
+bind -n C-j select-pane -D
+```
+
 ## Sublime
 
 ### LSP
