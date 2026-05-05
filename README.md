@@ -27,7 +27,10 @@ git log --graph --pretty=format:'%C(auto)%h %C(cyan)(%cr)%Creset%C(auto)%d%Crese
 
 ## Tmux
 
-Navigate between pane w/ `Ctrl` + `hjkl`, wim-style.
+> [!NOTE]
+> To source the tmux config file: `tmux source-file ~/.tmux.conf`
+
+Tmux configs are kept inside `.tmux.conf`
 
 ```sh
 # switch panes using Ctrl+hjkl (vim-style) without prefix
