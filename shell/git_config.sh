@@ -7,7 +7,7 @@ alias gds='git diff --staged'
 gc() {
 	# usage: gc commit message ...
 	# no quotes needed
-	git commit -m "$@"
+	git commit -m "$*"
 }
 
 alias gca='git commit --amend'
