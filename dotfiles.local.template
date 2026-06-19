@@ -1,0 +1,40 @@
+# -----------------------------------------------------------------------------
+# Machine-local settings template
+# Preset values are examples for pelle@uppmax.uu.se HPC cluster
+#
+# Copy this to ~/.dotfiles.local and fill in real values:
+#   cp dotfiles.local.template ~/.dotfiles.local
+#
+# ~/.dotfiles.local is NOT tracked in git
+# -----------------------------------------------------------------------------
+
+# Mandatory (used by custom functions and job submissions):
+# Slurm account
+#>>>>> export ACCOUNT=""
+#>>>>> export EMAIL=""
+
+# HPCs project name
+#>>>>> export PROJECT="karlssonlab"
+
+# (Optional) Apptainer/Singularity bind mounts
+#>>>>> export APPTAINER_BIND=/scratch,/proj,/gorilla
+
+# (Optional) Apptainer/Singularity cache & tmp files
+#>>>>> TMPDIR="/proj/$PROJECT/.SINGULARITY_TMPDIR"
+#>>>>> CACHEDIR="/proj/$PROJECT/.SINGULARITY_CACHEDIR"
+
+#>>>>> mkdir -p "$TMPDIR" "$CACHEDIR"
+
+#>>>>> export SINGULARITY_CACHEDIR="$CACHEDIR"
+#>>>>> export NXF_SINGULARITY_CACHEDIR="$CACHEDIR"
+#>>>>> export SINGULARITY_TMPDIR="$TMPDIR"
+#>>>>> export SINGULARITYENV_NXF_DEBUG="$TMPDIR"
+#>>>>> export SINGULARITYENV_TMPDIR="$TMPDIR"
+#>>>>> export SINGULARITYENV_NXF_TASK_WORKDIR="$TMPDIR"
+
+#>>>>> export APPTAINER_CACHEDIR="$CACHEDIR"
+#>>>>> export NXF_APPTAINER_CACHEDIR="$CACHEDIR"
+#>>>>> export APPTAINER_TMPDIR="$TMPDIR"
+#>>>>> export APPTAINERENV_NXF_DEBUG="$TMPDIR"
+#>>>>> export APPTAINERENV_TMPDIR="$TMPDIR"
+#>>>>> export APPTAINERENV_NXF_TASK_WORKDIR="$TMPDIR"

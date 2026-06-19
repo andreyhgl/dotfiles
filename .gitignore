@@ -1,5 +1,11 @@
+*.log
+*.swp
+*~
 .DS_Store
 
-*.log
+# Machine-local config
+.dotfiles.local
+*.local
 
-ssh/
+# Backups created by install.sh
+*.backup

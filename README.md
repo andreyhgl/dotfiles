@@ -1,78 +1,161 @@
 # README
 
-Contains configurations for git, tmux, shell
+This repo contains configurations for configs (git, tmux, R), variables and functions.
 
-## Setup
+**Appends** to the existing `.bashrc`.
+
+## Layout
+
+```
+dotfiles/
+├── bin/
+│   └── checksum_verify.sh     # Slurm batch script (md5 verification)
+├── shell/
+│   ├── bashrc.sh              # entry point, sourced from the system ~/.bashrc
+│   ├── exports.sh             # portable environment variables
+│   ├── functions.sh           # custom shell functions
+│   └── aliases.sh             # shell aliases (git, R, Slurm)
+├── dotfiles.local.template    # template for machine-local settings (tracked)
+├── install.sh                 # bootstrap: symlinks + appends source block
+├── tmux.conf                  # symlinked to ~/.tmux.conf
+├── Rprofile                   # symlinked to ~/.Rprofile
+├── .gitignore
+└── README.md
+```
+
+## Install
 
 ```sh
-folder=".dotfiles"
-cd
-git clone git@github.com:andreyhgl/dotfiles.git ${folder} && cd ${folder}
-./install.sh
+folder="dotfiles"
+git clone git@github.com:andreyhgl/dotfiles.git "$folder"
+cd "$folder"
+bash install.sh
+
+# edit the machine-local config
+vi ~/.dotfiles.local
+source ~/.bashrc
 ```
 
-## Git aliases
+`install.sh` is idempotent — safe to run again after a `git pull`.
 
-```
-$ git log
+## Functions
 
-%h          commit hash, short
-%d          ref names
-%cr         committer date, short
-%s 	        git commit comment
-%C(<color>) set a color
+Defined in `shell/functions.sh`.
 
-git log --graph --pretty=format:'%C(auto)%h %C(cyan)(%cr)%Creset%C(auto)%d%Creset %s'
-```
+#### checksum_verify
 
-## Tmux
-
-> [!NOTE]
-> To source the tmux config file: `tmux source-file ~/.tmux.conf`
-
-Tmux configs are kept inside `.tmux.conf`
+Submit a checksum verification job (the function wraps `sbatch -A "$ACCOUNT"`):
 
 ```sh
-# switch panes using Ctrl+hjkl (vim-style) without prefix
-# -n = no prefix
-bind -n C-h select-pane -L
-bind -n C-l select-pane -R
-bind -n C-k select-pane -U
-bind -n C-j select-pane -D
+checksum_verify path/to/checksums.md5
 ```
 
-## Sublime
+Results appear in the directory the job ran in:
+- `_CHECKSUM.OK`      — all checksums matched
+- `_CHECKSUM.FAILED`  — one or more failed (contains md5sum's output)
 
-### LSP
+Can also be called directly:
 
-Install [language server protocols](https://lsp.sublimetext.io/) (LSP):
+```sh
+sbatch -A <account> ~/.local/bin/checksum_verify.sh path/to/checksums.md5
+```
 
-+ Open the command palette (`cmd+shift+p`) and run `Packages Control: Install Packages` (type `install`), then run:
-	+  `LSP`
-	
-+ [R](https://github.com/REditorSupport/sublime-ide-r#installation):
-	+  `R-IDE`
-	+  `LSP-R`
+### Interactive Slurm session
+ 
+`salloc` is wrapped (in `shell/functions.sh`) to apply sensible defaults and
+print a summary before launching the session. Arguments are positional and
+optional:
+ 
+```sh
+salloc [time] [mem_GB] [cpus]
+```
+ 
+| Argument | Default | Example |
+|----------|---------|---------|
+| `time` | `3:00:00` | `6:00:00` |
+| `mem_GB` (G appended automatically) | `20` → `20G` | `40` → `40G` |
+| `cpus` | `1` | `4` |
+ 
+```sh
+salloc                 # 3:00:00, 20G, 1 cpu
+salloc 6:00:00 40 4    # 6h, 40G, 4 cpus
+```
+ 
+Requires `ACCOUNT` to be set (in `~/.dotfiles.local`). To bypass the wrapper
+and call the real binary directly, use `command salloc ...`.
 
-	```r
-	# install R. install package languageserver
-	install.packages("languageserver")
-	```
+## Aliases & shortcuts
 
-+ bash:
-	+ `LSP-bash`
-	+ shellcheck:
-	
-	```sh
-	# on macOS
-	brew install shellcheck
-	```
+Defined in `shell/aliases.sh`.
 
-### Packages
+### git
+
+| Command | Expands to | Notes |
+|---------|------------|-------|
+| `gs`  | `git status --short` | Compact status |
+| `ga`  | `git add` | |
+| `gd`  | `git diff` | Unstaged changes |
+| `gds` | `git diff --staged` | Staged changes |
+| `gc`  | `git commit -m "$*"` | Function — no quotes needed: `gc fix the bug`. Quote if using special chars (`> \ '`). |
+| `gca`  | `git commit --amend` | Amend, edit message |
+| `gcan` | `git commit --amend --no-edit` | Amend, keep message |
+| `gsw` | `git switch` | Switch branches |
+| `gp`  | `git push` | |
+| `gpl` | `git pull` | |
+| `gl`  | `git log --graph ...` | Pretty one-line graph log |
+| `gt`  | `git for-each-ref ... refs/tags` | Tags, newest first, with date/tagger/subject |
+| `gb`  | `git branch -a ...` | All branches, newest commit first, with subject + relative date |
+
+### R
+
+| Command | Expands to | Notes |
+|---------|------------|-------|
+| `R` | `R --no-save --no-restore` | Stateless interactive R; `Ctrl-D` quits without the save prompt. Interactive only — pass flags explicitly in batch jobs. |
+
+### Slurm
+
+| Command | Expands to | Notes |
+|---------|------------|-------|
+| `jobinfo`      | `squeue -u $USER` | Your jobs |
+| `jobinfo_full` | `squeue -u $USER -o "..." \| column -t \| less -FRXS` | Wide, scrollable job table |
+
+## Configs
+
+#### Tmux
+
+Switch panes using Ctrl+hjkl (vim-style) without prefix
+
+## Machine-local config
+
+Per-cluster values (like `ACCOUNT`) live in `~/.dotfiles.local`, which is
+**not** tracked in git. Copy the template and edit it on each machine:
+
+```sh
+cp dotfiles.local.template ~/.dotfiles.local
+```
+
+## Uninstall
+
+Remove the marked block from `~/.bashrc`:
+
+```sh
+# >>> dotfiles >>>
+...
+# <<< dotfiles <<<
+```
+
+or restore the backup `install.sh` made:
+
+```bash
+cp ~/.bashrc.backup ~/.bashrc
+```
+
+Then remove the symlink: `rm ~/.local/bin/checksum_verify.sh`
 
 
 
----
+
+
 
 <!--
 
