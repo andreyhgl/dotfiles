@@ -1,6 +1,6 @@
 # README
 
-This repo contains configurations for configs (git, tmux, R), variables and functions.
+This repo contains personal configurations for configs (git, tmux, R), variables and functions.
 
 **Appends** to the existing `.bashrc`.
 
@@ -27,9 +27,10 @@ dotfiles/
 
 ```sh
 folder="dotfiles"
-git clone git@github.com:andreyhgl/dotfiles.git "$folder"
-cd "$folder"
-bash install.sh
+
+git clone git@github.com:andreyhgl/dotfiles.git "$folder" &&
+	cd "$folder" &&
+	bash install.sh
 
 # edit the machine-local config
 vi ~/.dotfiles.local
