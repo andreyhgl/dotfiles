@@ -120,6 +120,16 @@ Defined in `shell/aliases.sh`.
 | `jobinfo`      | `squeue -u $USER` | Your jobs |
 | `jobinfo_full` | `squeue -u $USER -o "..." \| column -t \| less -FRXS` | Wide, scrollable job table |
 
+## Prompt
+
+Defined in `shell/prompts.sh`.
+
+Show git states in prompt, works in `zsh` and `bash`.
+
+```sh
+[user@machine ~] (main) $ 
+```
+
 ## Configs
 
 #### Tmux
