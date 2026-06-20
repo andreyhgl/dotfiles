@@ -35,7 +35,7 @@ alias gb="git branch -a --format='%(HEAD) %(color:cyan)%(refname:short)%(color:r
 alias R='R --no-save --no-restore'
 
 
-# --- Slurm -------------------------------------------------------------------
+# ---- Slurm ------------------------------------------------------------------
 
 alias jobinfo='squeue -u $USER'
  
@@ -46,11 +46,24 @@ alias jobinfo='squeue -u $USER'
 # %M = Time used, %l = Time limit, %D = Nodes, %R = Reason/Nodelist
 alias jobinfo_full='squeue -u $USER -o "%T %M %R %D %P %.10i %j %.l" | column -t | less -FRXS'
 
-alias ll='ls -lhov --group-directories-first --color'
-alias lt='ls -lhovtr --group-directories-first --color'
-alias la='ls -alhov --group-directories-first --color'
-alias du='du -sh'
 
+# ---- listing ----------------------------------------------------------------
+
+# GNU ls (Linux/HPC) supports --group-directories-first and -v (natural sort);
+# BSD ls (macOS) does not
+if ls --group-directories-first /dev/null >/dev/null 2>&1; then
+    # GNU coreutils
+    alias ll='ls -lhov --group-directories-first --color=auto'
+    alias lt='ls -lhovtr --group-directories-first --color=auto'
+    alias la='ls -alhov --group-directories-first --color=auto'
+else
+    # BSD ls (macOS) — no grouping/-v; -G colorizes
+    alias ll='ls -oglhG'
+    alias lt='ls -oglhGtr'
+    alias la='ls -ogalhG'
+fi
+
+alias du='du -sh'
 
 # ---- Nextflow ---------------------------------------------------------------
 

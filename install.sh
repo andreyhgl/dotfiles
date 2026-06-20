@@ -111,7 +111,7 @@ fi
 if [ ! -f "$HOME/.dotfiles.local" ]; then
     if [ -f "$DOTFILES_DIR/dotfiles.local.template" ]; then
         cp "$DOTFILES_DIR/dotfiles.local.template" "$HOME/.dotfiles.local"
-        printf ' > Created %s from template. EDIT IT to set variables:\n\t - ACCOUNT\n\t - PROJECT' "$HOME/.dotfiles.local"
+        printf ' > Created %s from template. EDIT IT to set variables:\n\t - ACCOUNT\n\t - PROJECT\n' "$HOME/.dotfiles.local"
     fi
 else
     echo " > ~/.dotfiles.local already exists, skipping..."
