@@ -117,6 +117,7 @@ else
     echo " > ~/.dotfiles.local already exists, skipping..."
 fi
 
+echo ""
 echo "------------------------------------------------------"
 echo " > Done! Next steps:"
 echo "  1. Edit variabiles in ~/.dotfiles.local"

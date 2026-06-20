@@ -22,6 +22,7 @@ export PATH="$HOME/.local/bin:$PATH"
 [ -f "$DOTFILES/shell/exports.sh" ] && source "$DOTFILES/shell/exports.sh"
 [ -f "$DOTFILES/shell/functions.sh" ] && source "$DOTFILES/shell/functions.sh"
 [ -f "$DOTFILES/shell/aliases.sh" ] && source "$DOTFILES/shell/aliases.sh"
+[ -f "$DOTFILES/shell/prompt.sh" ] && source "$DOTFILES/shell/prompt.sh"
 
 # Machine-local overrides (untracked; holds ACCOUNT and per-cluster settings).
 # Sourced LAST so it can override anything above.
