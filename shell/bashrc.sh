@@ -30,8 +30,14 @@ export PATH="$HOME/.local/bin:$PATH"
 
 
 # ---- Print help function ----------------------------------------------------
+
 # Will print command to see all custom functions and configs.
 # Only in interactive shells
+# will suppress inside tmux (annoying to see the hint for every new pane)
 case $- in
-    *i*) printf '\n  Type \033[36mdofiles\033[0m to list custom commands.\n\n' ;;
+    *i*)
+        if [ -z "${TMUX:-}" ]; then
+            printf '\n  Type \033[36mcmds\033[0m to list custom commands.\n\n'
+        fi
+        ;;
 esac
