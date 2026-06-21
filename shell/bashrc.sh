@@ -27,3 +27,11 @@ export PATH="$HOME/.local/bin:$PATH"
 # Machine-local overrides (untracked; holds ACCOUNT and per-cluster settings).
 # Sourced LAST so it can override anything above.
 [ -f "$HOME/.dotfiles.local" ] && source "$HOME/.dotfiles.local"
+
+
+# ---- Print help function ----------------------------------------------------
+# Will print command to see all custom functions and configs.
+# Only in interactive shells
+case $- in
+    *i*) printf '\n  Type \033[36mdofiles\033[0m to list custom commands.\n\n' ;;
+esac
