@@ -2,6 +2,17 @@
 -- Plugin list for lazy.nvim. Syntax highlighting only (no LSP).
 
 return {
+    -- Colorscheme with strong Treesitter support (richer highlighting).
+    -- priority high + lazy=false so it loads before other UI.
+    {
+        "folke/tokyonight.nvim",
+        lazy = false,
+        priority = 1000,
+        config = function()
+            vim.cmd.colorscheme("tokyonight-moon")
+        end,
+    },
+
     -- Treesitter: syntax highlighting for bash, R, groovy, etc.
     -- Pinned to the `master` branch: nvim-treesitter rewrote itself on `main`
     -- (now the default) with a different, incompatible API. `master` keeps the
@@ -12,7 +23,6 @@ return {
         branch = "master",
         build = ":TSUpdate",
         config = function()
-            -- pcall guards against a half-installed state so nvim still opens.
             local ok, configs = pcall(require, "nvim-treesitter.configs")
             if not ok then
                 return
