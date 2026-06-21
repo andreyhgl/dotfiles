@@ -48,6 +48,13 @@ link_dotfile "$DOTFILES_DIR/tmux.conf" "$HOME/.tmux.conf"
 link_dotfile "$DOTFILES_DIR/Rprofile" "$HOME/.Rprofile"
 
 
+# ---- neovim config ----------------------------------------------------------
+
+# symlink nvim/ to ~/.config/nvim
+mkdir -p "$HOME/.config"
+link_dotfile "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
+
+
 # ---- Append the source-block to shell rc-files (idempotent) -----------------
 
 # Source-block
