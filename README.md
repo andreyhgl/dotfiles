@@ -14,7 +14,14 @@ dotfiles/
 │   ├── bashrc.sh              # entry point, sourced from the system ~/.bashrc
 │   ├── exports.sh             # portable environment variables
 │   ├── functions.sh           # custom shell functions
-│   └── aliases.sh             # shell aliases (git, R, Slurm)
+│   ├── aliases.sh             # shell aliases (git, R, Slurm)
+│   └── prompt.sh              # git-aware cross-shell prompt
+├── nvim/                      # symlinked to ~/.config/nvim
+│   ├── init.lua               # entry: settings, lazy.nvim bootstrap
+│   └── lua/config/
+│       ├── plugins.lua        # colorscheme, Treesitter, Nextflow syntax
+│       ├── filetypes.lua      # .nf / nextflow.config detection
+│       └── keymaps.lua        # paste-mode toggle
 ├── dotfiles.local.template    # template for machine-local settings (tracked)
 ├── install.sh                 # bootstrap: symlinks + appends source block
 ├── tmux.conf                  # symlinked to ~/.tmux.conf
@@ -119,6 +126,39 @@ Defined in `shell/aliases.sh`.
 |---------|------------|-------|
 | `jobinfo`      | `squeue -u $USER` | Your jobs |
 | `jobinfo_full` | `squeue -u $USER -o "..." \| column -t \| less -FRXS` | Wide, scrollable job table |
+
+## Neovim
+ 
+Config lives in `nvim/` and is symlinked to `~/.config/nvim` by `install.sh`.
+Provides **syntax highlighting** for bash, R, and Nextflow, plus the
+**[nightfly](https://github.com/bluz71/vim-nightfly-colors)** colorscheme.
+ 
+### Requirements
+ 
+- **Neovim 0.9+** (uses `vim.filetype.add` and modern Lua APIs).
+- A **true-color terminal** — nightfly is true-color only. On macOS use iTerm2,
+  kitty, WezTerm, or Ghostty (Terminal.app does not do full 24-bit color).
+  `termguicolors` is already enabled in `init.lua`.
+- A **C compiler** for Treesitter parser compilation. On macOS:
+  `xcode-select --install`.
+
+### First launch
+ 
+1. Open `nvim`. lazy.nvim bootstraps itself and installs the plugins
+   automatically (you'll see the install UI).
+2. Treesitter compiles the bash/r/groovy parsers. If it doesn't run
+   automatically, run `:TSUpdate`.
+3. Restart `nvim`.
+On **HPC**, run the first launch on a **login node** (which has network access)
+so plugins and parsers download; compute nodes are often offline.
+ 
+### Notes
+ 
++ Treesitter is pinned to its `master` branch — the newer `main` branch is an
+  incompatible rewrite with a different API.
++ If highlighting looks wrong or plugins seem stuck, reset the cache:
+  `rm -rf ~/.local/share/nvim/lazy/nvim-treesitter` then reopen `nvim`.
+
 
 ## Prompt
 

@@ -2,14 +2,15 @@
 -- Plugin list for lazy.nvim. Syntax highlighting only (no LSP).
 
 return {
-    -- Colorscheme with strong Treesitter support (richer highlighting).
-    -- priority high + lazy=false so it loads before other UI.
+    -- Colorscheme: nightfly (dark, strong Treesitter support).
+    -- name + lazy=false + high priority so it loads before other UI.
     {
-        "folke/tokyonight.nvim",
+        "bluz71/vim-nightfly-colors",
+        name = "nightfly",
         lazy = false,
         priority = 1000,
         config = function()
-            vim.cmd.colorscheme("tokyonight-moon")
+            vim.cmd([[colorscheme nightfly]])
         end,
     },
 
