@@ -2,12 +2,22 @@
 -- Plugin list for lazy.nvim. Syntax highlighting only (no LSP).
 
 return {
-    -- Treesitter: modern syntax highlighting + indentation for bash, R, etc.
+    -- Treesitter: syntax highlighting for bash, R, groovy, etc.
+    -- Pinned to the `master` branch: nvim-treesitter rewrote itself on `main`
+    -- (now the default) with a different, incompatible API. `master` keeps the
+    -- classic require("nvim-treesitter.configs").setup{} config working and is
+    -- maintained for backward compatibility.
     {
         "nvim-treesitter/nvim-treesitter",
+        branch = "master",
         build = ":TSUpdate",
         config = function()
-            require("nvim-treesitter.configs").setup({
+            -- pcall guards against a half-installed state so nvim still opens.
+            local ok, configs = pcall(require, "nvim-treesitter.configs")
+            if not ok then
+                return
+            end
+            configs.setup({
                 ensure_installed = { "bash", "r", "groovy", "lua" },
                 highlight = { enable = true },
                 indent = { enable = true },
@@ -16,7 +26,5 @@ return {
     },
 
     -- Nextflow syntax (filetype + Groovy-based highlighting).
-    -- Treesitter's groovy parser handles much of it; this adds Nextflow-aware
-    -- highlighting for .nf files specifically.
     { "LukeGoodsell/nextflow-vim" },
 }
