@@ -37,7 +37,7 @@ export PATH="$HOME/.local/bin:$PATH"
 case $- in
     *i*)
         if [ -z "${TMUX:-}" ]; then
-            printf '\n  Type \033[36mcmds\033[0m to list custom commands.\n\n'
+            printf '\n > Type \033[36mdotfiles\033[0m to list custom commands.\n\n'
         fi
         ;;
 esac
