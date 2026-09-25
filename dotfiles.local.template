@@ -15,6 +15,7 @@
 
 # HPCs project name
 #>>>>> export PROJECT="karlssonlab"
+#>>>>> export NEXTFLOW_MODULE="Nextflow"
 
 # (Optional) Apptainer/Singularity bind mounts
 #>>>>> export APPTAINER_BIND=/scratch,/proj,/gorilla

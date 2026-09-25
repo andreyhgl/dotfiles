@@ -2,6 +2,7 @@
 *.swp
 *~
 .DS_Store
+/ssh/
 
 # Machine-local config
 .dotfiles.local

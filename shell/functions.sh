@@ -32,6 +32,26 @@ salloc() {
     command salloc -A "$ACCOUNT" -t "$time" --mem="$mem" -c "$cpus"
 }
 
+#---- Nextflow ----------------------------------------------------------------
+
+# Show the latest Nextflow run log
+# Loading Nextflow module first if needed, reads from ~/.dotfiles.local
+#
+# Usage: 
+# $ nflog            (last run)
+# $ nflog <run_name> (a specific run)
+nflog() {
+    if ! command -v nextflow >/dev/null 2>&1; then
+        if ! command -v module >/dev/null 2>&1; then
+            echo "nflog: nextflow not found and no module system" >&2
+            return 1
+        fi
+        # eval lets NEXTFLOW_MODULE hold several modules in bash and zsh
+        eval "module load ${NEXTFLOW_MODULE:-nextflow}" || return 1
+    fi
+    nextflow log "${1:-last}" -f status,hash,complete,name | less -FRXS
+}
+
 
 # List the custom commands this dotfiles setup provides.
 dotfiles() {

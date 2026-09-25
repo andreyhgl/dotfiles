@@ -64,7 +64,3 @@ else
 fi
 
 alias du='du -sh'
-
-# ---- Nextflow ---------------------------------------------------------------
-
-alias "nflog"='nextflow log last -f status,hash,complete,name | less -FRXS'
