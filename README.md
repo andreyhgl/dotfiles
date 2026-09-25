@@ -4,6 +4,23 @@ Personal configurations for configs (git, tmux, R), variables and functions.
 
 **Appends** to the existing `.bashrc`.
 
+> [!NOTE]
+> `install.sh` is idempotent — safe to run again after a `git pull`.
+
+## Install
+
+```sh
+folder="dotfiles"
+
+git clone git@github.com:andreyhgl/dotfiles.git "$folder" &&
+  cd "$folder" &&
+  bash install.sh
+
+# edit the machine-local config
+vi ~/.dotfiles.local
+source ~/.bashrc
+```
+
 ## Layout
 
 ```
@@ -30,21 +47,7 @@ dotfiles/
 └── README.md
 ```
 
-## Install
 
-```sh
-folder="dotfiles"
-
-git clone git@github.com:andreyhgl/dotfiles.git "$folder" &&
-	cd "$folder" &&
-	bash install.sh
-
-# edit the machine-local config
-vi ~/.dotfiles.local
-source ~/.bashrc
-```
-
-`install.sh` is idempotent — safe to run again after a `git pull`.
 
 ## Functions
 
