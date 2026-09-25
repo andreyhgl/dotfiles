@@ -32,26 +32,42 @@ salloc() {
     command salloc -A "$ACCOUNT" -t "$time" --mem="$mem" -c "$cpus"
 }
 
-#---- Nextflow ----------------------------------------------------------------
+#---- Nextflow QoL ------------------------------------------------------------
+
+# Make sure nextflow is available, loads module if required.
+# reads NEXTFLOW_MODULE from ~/.dotfiles.local
+_nf_ensure() {
+    command -v nextflow >/dev/null 2>&1 && return 0
+    if ! command -v module >/dev/null 2>&1; then
+        echo "nextflow not found and no module system" >&2
+        return 1
+    fi
+    # eval lets NEXTFLOW_MODULE hold several modules in bash and zsh
+    eval "module load ${NEXTFLOW_MODULE:-nextflow}"
+}
 
 # Show the latest Nextflow run log
-# Loading Nextflow module first if needed, reads from ~/.dotfiles.local
-#
-# Usage: 
 # $ nflog            (last run)
-# $ nflog <run_name> (a specific run)
+# $ nflog [run_name] (specific run)
 nflog() {
-    if ! command -v nextflow >/dev/null 2>&1; then
-        if ! command -v module >/dev/null 2>&1; then
-            echo "nflog: nextflow not found and no module system" >&2
-            return 1
-        fi
-        # eval lets NEXTFLOW_MODULE hold several modules in bash and zsh
-        eval "module load ${NEXTFLOW_MODULE:-nextflow}" || return 1
-    fi
+    _nf_ensure || return 1
     nextflow log "${1:-last}" -f status,hash,complete,name | less -FRXS
 }
 
+# Delete the latest work files. Asks for confirmation!
+# $ nfclean            (last run)
+# $ nfclean [run_name] (specific run)
+nfclean() {
+    _nf_ensure || return 1
+    local run="${1:-last}"
+    nextflow clean "$run" -n || return 1
+    printf 'Delete these files? [y/N] '
+    read -r reply
+    case "$reply" in
+        [yY]*) nextflow clean "$run" -f ;;
+        *) echo "Aborted." ;;
+    esac
+}
 
 # List the custom commands this dotfiles setup provides.
 dotfiles() {
@@ -65,6 +81,7 @@ Custom commands (see ~/dotfiles):
     checksum_verify <file.md5>     submit md5 verification job to Slurm
     salloc [time] [mem] [cpus]     interactive Slurm session with defaults
     nflog [run_name]               Nextflow run log (defaults latest run)
+    nfclean [run_name]             detele run work files (defaults latest run)
 
   Git aliases:
     gc <message...>                git commit -m (no quotes needed)
