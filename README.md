@@ -1,6 +1,6 @@
 # README
 
-This repo contains personal configurations for configs (git, tmux, R), variables and functions.
+Personal configurations for configs (git, tmux, R), variables and functions.
 
 **Appends** to the existing `.bashrc`.
 
