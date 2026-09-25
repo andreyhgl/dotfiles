@@ -5,7 +5,7 @@ Personal configurations for configs (git, tmux, R), variables and functions.
 **Appends** to the existing `.bashrc`.
 
 > [!NOTE]
-> `install.sh` is idempotent — safe to run again after a `git pull`.
+> `install.sh` is idempotent: safe to run multiple times (after a `git pull`).
 
 ## Install
 
