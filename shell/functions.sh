@@ -64,7 +64,7 @@ Custom commands (see ~/dotfiles):
   Functions:
     checksum_verify <file.md5>     submit md5 verification job to Slurm
     salloc [time] [mem] [cpus]     interactive Slurm session with defaults
-
+    nflog [run_name]               Nextflow run log (defaults latest run)
 
   Git aliases:
     gc <message...>                git commit -m (no quotes needed)
