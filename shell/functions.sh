@@ -47,11 +47,13 @@ _nf_ensure() {
 }
 
 # Show the latest Nextflow run log
+# duration = from submit to finish
+# realtime = run time
 # $ nflog            (last run)
 # $ nflog [run_name] (specific run)
 nflog() {
     _nf_ensure || return 1
-    nextflow log "${1:-last}" -f status,hash,complete,name | less -FRXS
+    nextflow log "${1:-last}" -f status,hash,duration,realtime,name | less -FRXS
 }
 
 # Delete the latest work files. Asks for confirmation!
