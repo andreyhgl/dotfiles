@@ -62,8 +62,25 @@ nflog() {
 nfclean() {
     _nf_ensure || return 1
     local run="${1:-last}"
+    local info
+    if [ "$run" = "last" ]; then
+        info=$(nextflow log 2>/dev/null | tail -n 1)
+    else
+        info=$(nextflow log 2>/dev/null |
+            awk -F'\t' -v r="$run" '{ gsub(/^ +| +$/, "", $3) } $3 == r')
+    fi
+    if [ -z "$info" ]; then
+        echo "No run found: $run" >&2
+        return 1
+    fi
+    # Columns: TIMESTAMP, DURATION, RUN NAME, STATUS, ...
+    echo "$info" | awk -F'\t' '{
+        for (i = 1; i <= 4; i++) gsub(/^ +| +$/, "", $i)
+        printf "Run:      %s\nStarted:  %s\nDuration: %s\nStatus:   %s\n\n",
+            $3, $1, $2, $4
+    }'
     nextflow clean "$run" -n || return 1
-    printf 'Delete these files? [y/N] '
+    printf ' > Delete these files? [y/N] '
     read -r reply
     case "$reply" in
         [yY]*) nextflow clean "$run" -f ;;
