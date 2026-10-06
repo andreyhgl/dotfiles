@@ -12,15 +12,26 @@ checksum_verify() {
 
 # Start an interactive salloc session.
 # Usage: salloc [time] [mem_GB] [cpus]
-#        salloc 6:00:00 40 4 => 6h, 40G, 4 cpus
-# defaults to => 3:00:00, 20G, 1 cpu
+#        salloc  6      40       4
+# defaults to => 3:00:00, 60G, 1 cpu
 # 'command salloc' calls the real binary
 salloc() {
-    local time="${1:-3:00:00}"
-    local mem="${2:-20}G"
+    local time="${1:-3}"
+    local mem="${2:-60}"
     local cpus="${3:-1}"
     : "${ACCOUNT:?ACCOUNT not set — edit ~/.dotfiles.local}"
- 
+
+    # Plain number = hours (e.g. 3 -> 3:00:00, 1.5 -> 1:30:00)
+    if [[ $time =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+        time=$(awk -v h="$time" 'BEGIN {
+            m = int(h * 60 + 0.5)
+            printf "%d:%02d:00", int(m / 60), m % 60
+        }')
+    fi
+
+    # Plain number = GB; allow explicit units like 500M or 1T
+    [[ $mem =~ ^[0-9]+$ ]] && mem="${mem}G"
+
     printf '\n'
     printf ' ~~ Starting interactive session ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n'
     printf ' > \e[35mAccount :\e[0m %s\n' "$ACCOUNT"
@@ -28,9 +39,10 @@ salloc() {
     printf ' > \e[35mMemory  :\e[0m %s\n' "$mem"
     printf ' > \e[35mCpus    :\e[0m %s\n' "$cpus"
     printf ' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n'
- 
+
     command salloc -A "$ACCOUNT" -t "$time" --mem="$mem" -c "$cpus"
 }
+
 
 #---- Nextflow QoL ------------------------------------------------------------
 
@@ -94,25 +106,25 @@ dotfiles() {
 
 Custom commands (see ~/dotfiles):
 ---------------------------------
-  > dotfiles                       show this list
+    > dotfiles                      show this list
 
-  Functions:
-    checksum_verify <file.md5>     submit md5 verification job to Slurm
-    salloc [time] [mem] [cpus]     interactive Slurm session with defaults
-    nflog [run_name]               Nextflow run log (defaults latest run)
-    nfclean [run_name]             detele run work files (defaults latest run)
+    Functions:
+        checksum_verify <file.md5>  submit md5 verification job to Slurm
+        salloc [time] [mem] [cpus]  interactive Slurm session with defaults
+        nflog [run_name]            Nextflow run log (defaults latest run)
+        nfclean [run_name]          detele run work files (defaults latest run)
 
-  Git aliases:
-    gc <message...>                git commit -m (no quotes needed)
-    gs ga gd gds                   status / add / diff / diff --staged
-    gca gcan                       amend / amend --no-edit
-    gsw gp gpl                     switch / push / pull
-    gl gt gb                       graph log / tags / branches
+    Git aliases:
+        gc <message...>             git commit -m (no quotes needed)
+        gs ga gd gds                status / add / diff / diff --staged
+        gca gcan                    amend / amend --no-edit
+        gsw gp gpl                  switch / push / pull
+        gl gt gb                    graph log / tags / branches
 
-  QoL:
-    ll lt la                       long listings (size / time / all)
-    jobinfo jobinfo_full           Slurm jobs / extra info
-    R                              R with --no-save --no-restore
+    QoL:
+        ll lt la                    long listings (size / time / all)
+        jobinfo jobinfo_full        Slurm jobs / extra info
+        R                           R with --no-save --no-restore
 
 EOF
 }
