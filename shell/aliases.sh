@@ -21,7 +21,7 @@ alias gca='git commit --amend'
 alias gcan='git commit --amend --no-edit'
 alias gsw='git switch'
 alias gp='git push'
-alias gpl='git pull'
+#alias gpl='git pull'
 
 alias gl="git log --graph --pretty=format:'%C(auto)%h %C(cyan)(%cr)%Creset%C(auto)%d%Creset %s'"
 
