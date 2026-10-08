@@ -74,25 +74,26 @@ nflog() {
 nfclean() {
     _nf_ensure || return 1
     local run="${1:-last}"
-    local info
-    if [ "$run" = "last" ]; then
-        info=$(nextflow log 2>/dev/null | tail -n 1)
-    else
-        info=$(nextflow log 2>/dev/null |
-            awk -F'\t' -v r="$run" '{ gsub(/^ +| +$/, "", $3) } $3 == r')
-    fi
-    if [ -z "$info" ]; then
-        echo "No run found: $run" >&2
-        return 1
-    fi
-    echo "$info" | awk -F'\t' '{
-        for (i = 1; i <= 4; i++) gsub(/^ +| +$/, "", $i)
-        printf "Run:      %s\nStarted:  %s\nDuration: %s\nStatus:   %s\n\n",
-            $3, $1, $2, $4
-    }'
 
     # Dry run only to make sure clean can resolve the run.
     nextflow clean "$run" -n >/dev/null || return 1
+
+    local row
+    if [ "$run" = "last" ]; then
+        row=$(nextflow log 2>/dev/null | tail -n 1)
+    else
+        row=$(nextflow log 2>/dev/null |
+            awk -F'\t' -v r="$run" '{ gsub(/^ +| +$/, "", $3) } $3 == r')
+    fi
+    if [ -z "$row" ]; then
+        echo "No run found: $run" >&2
+        return 1
+    fi
+    echo "$row" | awk -F'\t' '{
+        for (i = 1; i <= 4; i++) gsub(/^ +| +$/, "", $i)
+        printf " Run:      %s\n Started:  %s\n Duration: %s\n Status:   %s\n\n",
+            $3, $1, $2, $4
+    }'
 
     local changed
     changed=$(nextflow log "$run" -f hash,name,status 2>/dev/null |
@@ -101,7 +102,7 @@ nfclean() {
             printf "  %s  %s\n", substr($1, 1, 10), $2
         }')
 
-    echo "Work directories to delete (changed tasks only):"
+    echo " > Work directories to delete:"
     if [ -n "$changed" ]; then
         echo "$changed"
     else
