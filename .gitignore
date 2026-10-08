@@ -3,6 +3,7 @@
 *~
 .DS_Store
 /ssh/
+/skills/
 
 # Machine-local config
 .dotfiles.local

@@ -93,10 +93,20 @@ nfclean() {
 
     # Dry run only to make sure clean can resolve the run.
     nextflow clean "$run" -n >/dev/null || return 1
-    echo "Work directories to delete:"
-    nextflow log "$run" -f hash,name 2>/dev/null |
+
+    local changed
+    changed=$(nextflow log "$run" -f hash,name,status 2>/dev/null |
         sort -t$'\t' -k2,2 -k1,1 |
-        awk -F'\t' '{ printf "  %s  %s\n", $2, substr($1, 1, 10) }'
+        awk -F'\t' '$3 != "CACHED" {
+            printf "  %s  %s\n", $2, substr($1, 1, 10)
+        }')
+
+    echo "Work directories to delete (changed tasks only):"
+    if [ -n "$changed" ]; then
+        echo "$changed"
+    else
+        echo "  (none, all tasks were cached)"
+    fi
     echo
 
     printf 'Delete these files? [y/N] '
