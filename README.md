@@ -73,9 +73,9 @@ sbatch -A <account> ~/.local/bin/checksum_verify.sh path/to/checksums.md5
 
 ### Interactive Slurm session
  
-`salloc` is wrapped (in `shell/functions.sh`) to apply sensible defaults and
-print a summary before launching the session. Arguments are positional and
-optional:
+`salloc` is a wrapper for slurm job allocation (in `shell/functions.sh`).
+Applies for a session with defaults and print a summary before.
+Arguments are positional and optional:
  
 ```sh
 salloc [time] [mem_GB] [cpus]
@@ -83,13 +83,13 @@ salloc [time] [mem_GB] [cpus]
  
 | Argument | Default | Example |
 |----------|---------|---------|
-| `time` | `3:00:00` | `6:00:00` |
-| `mem_GB` (G appended automatically) | `20` → `20G` | `40` → `40G` |
+| `time` (single digit reads a hours)| `3` => `3:00:00` | `6` => `6:00:00` |
+| `mem_GB` (G appended automatically) | `20` => `20G` | `40` => `40G` |
 | `cpus` | `1` | `4` |
  
 ```sh
-salloc                 # 3:00:00, 20G, 1 cpu
-salloc 6:00:00 40 4    # 6h, 40G, 4 cpus
+salloc           # 3:00:00, 20G, 1 cpu
+salloc 6 40 4    # 6:00:00, 40G, 4 cpus
 ```
  
 Requires `ACCOUNT` to be set (in `~/.dotfiles.local`). To bypass the wrapper
