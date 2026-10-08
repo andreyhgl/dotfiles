@@ -85,14 +85,21 @@ nfclean() {
         echo "No run found: $run" >&2
         return 1
     fi
-    # Columns: TIMESTAMP, DURATION, RUN NAME, STATUS, ...
     echo "$info" | awk -F'\t' '{
         for (i = 1; i <= 4; i++) gsub(/^ +| +$/, "", $i)
         printf "Run:      %s\nStarted:  %s\nDuration: %s\nStatus:   %s\n\n",
             $3, $1, $2, $4
     }'
-    nextflow clean "$run" -n || return 1
-    printf ' > Delete these files? [y/N] '
+
+    # Dry run only to make sure clean can resolve the run.
+    nextflow clean "$run" -n >/dev/null || return 1
+    echo "Work directories to delete:"
+    nextflow log "$run" -f hash,name 2>/dev/null |
+        sort -t$'\t' -k2,2 -k1,1 |
+        awk -F'\t' '{ printf "  %s  %s\n", $2, substr($1, 1, 10) }'
+    echo
+
+    printf 'Delete these files? [y/N] '
     read -r reply
     case "$reply" in
         [yY]*) nextflow clean "$run" -f ;;
