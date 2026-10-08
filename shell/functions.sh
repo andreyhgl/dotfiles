@@ -89,6 +89,8 @@ nfclean() {
         echo "No run found: $run" >&2
         return 1
     fi
+    echo ""
+    echo "----------------------"
     echo "$row" | awk -F'\t' '{
         for (i = 1; i <= 4; i++) gsub(/^ +| +$/, "", $i)
         printf " Run:      %s\n Started:  %s\n Duration: %s\n Status:   %s\n\n",
@@ -99,10 +101,10 @@ nfclean() {
     changed=$(nextflow log "$run" -f hash,name,status 2>/dev/null |
         sort -t$'\t' -k2,2 -k1,1 |
         awk -F'\t' '$3 != "CACHED" {
-            printf "  %s  %s\n", substr($1, 1, 10), $2
+            printf " >  %s  %s\n", substr($1, 1, 10), $2
         }')
 
-    echo " > Work directories to delete:"
+    echo " Work directories to delete:"
     if [ -n "$changed" ]; then
         echo "$changed"
     else
@@ -110,7 +112,7 @@ nfclean() {
     fi
     echo
 
-    printf 'Delete these files? [y/N] '
+    printf ' Delete these files? [y/N] '
     read -r reply
     case "$reply" in
         [yY]*) nextflow clean "$run" -f ;;
