@@ -90,7 +90,7 @@ nfclean() {
         return 1
     fi
     echo ""
-    echo "----------------------"
+    echo "--------------------------------"
     echo "$row" | awk -F'\t' '{
         for (i = 1; i <= 4; i++) gsub(/^ +| +$/, "", $i)
         printf " Run:      %s\n Started:  %s\n Duration: %s\n Status:   %s\n\n",
