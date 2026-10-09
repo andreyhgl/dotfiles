@@ -109,7 +109,7 @@ nfclean() {
     changed=$(nextflow log "$run" -f hash,name,status 2>/dev/null |
         sort -t$'\t' -k2,2 -k1,1 |
         awk -F'\t' '$3 != "CACHED" {
-            printf " >  %s  %s\n", substr($1, 1, 10), $2
+            printf " > %s  %s\n", substr($1, 1, 10), $2
         }')
 
     echo " Work directories to delete:"
