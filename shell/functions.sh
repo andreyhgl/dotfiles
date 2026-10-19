@@ -2,38 +2,8 @@
 # Sourced by shell/bashrc.sh
 
 # Checksum for sequencing files
-# Submit to slurm if sbatch installed and $ACCOUNT set
-# Otherwise, run in bash
-_checksum_verify_run() {
-    local file="$1" output status
-
-    if [[ ! -f "$file" ]]; then
-        echo " > Error: '$file' not found." >&2
-        return 2
-    fi
-
-    # Show every result on stdout (fd 3) while also capturing it
-    {
-        output=$(
-            md5sum -c "$file" 2>&1 | tee /dev/fd/3
-            exit "${PIPESTATUS[0]}"
-        )
-        status=$?
-    } 3>&1
-
-    if (( status == 0 )); then
-        echo " ==== All checksum verified successfully ====" > _CHECKSUM.OK
-    else
-        {
-            echo "Checksum verification FAILED (exit: $status)"
-            echo "----"
-            grep -v ': OK$' <<< "$output"
-        } > _CHECKSUM.FAILED
-    fi
-
-    return "$status"
-}
-
+# Submit to SLURM if sbatch is installed and $ACCOUNT is set,
+# otherwise run locally with bash. Works when sourced from bash or zsh.
 checksum_verify() {
     local usage="
  Usage: checksum_verify [-h] <path/to/checksums.md5>
@@ -59,14 +29,38 @@ checksum_verify() {
         return 2
     fi
 
+    # Job body: always run by bash, reads the path from $CHECKSUM_FILE
+    local job
+    job=$(cat <<'EOF'
+#!/bin/bash -l
+{
+    output=$(
+        md5sum -c "$CHECKSUM_FILE" 2>&1 | tee /dev/fd/3
+        exit "${PIPESTATUS[0]}"
+    )
+    rc=$?
+} 3>&1
+
+if (( rc == 0 )); then
+    echo " ==== All checksum verified successfully ====" > _CHECKSUM.OK
+else
+    {
+        echo "Checksum verification FAILED (exit: $rc)"
+        echo "----"
+        grep -v ': OK$' <<< "$output"
+    } > _CHECKSUM.FAILED
+fi
+
+exit "$rc"
+EOF
+    )
+
     if [[ -n "${ACCOUNT:-}" ]] && command -v sbatch >/dev/null 2>&1; then
-        local job
-        job=$(printf '#!/bin/bash -l\n%s\n_checksum_verify_run %q\n' \
-            "$(declare -f _checksum_verify_run)" "$file")
-        sbatch -A "$ACCOUNT" -t 2:00:00 -J checksum_verify <<< "$job"
+        CHECKSUM_FILE="$file" sbatch -A "$ACCOUNT" -t 2:00:00 \
+            -J checksum_verify --export=ALL <<< "$job"
     else
-        echo " > ACCOUNT not set or sbatch not found; running locally with bash" >&2
-        _checksum_verify_run "$file"
+        echo " > ACCOUNT not set or sbatch not found; running locally" >&2
+        CHECKSUM_FILE="$file" bash <<< "$job"
     fi
 }
 
