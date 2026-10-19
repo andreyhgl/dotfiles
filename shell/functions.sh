@@ -9,6 +9,11 @@ _checksum_verify_run() {
 
     if [[ ! -f "$file" ]]; then
         echo " > Error: '$file' not found." >&2
+        return 2_checksum_verify_run() {
+    local file="$1" output status
+
+    if [[ ! -f "$file" ]]; then
+        echo " > Error: '$file' not found." >&2
         return 2
     fi
 
