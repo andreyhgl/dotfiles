@@ -12,8 +12,14 @@ _checksum_verify_run() {
         return 2
     fi
 
-    output=$(md5sum -c --quiet "$file" 2>&1)
-    status=$?
+    # Show every result on stdout (fd 3) while also capturing it
+    {
+        output=$(
+            md5sum -c "$file" 2>&1 | tee /dev/fd/3
+            exit "${PIPESTATUS[0]}"
+        )
+        status=$?
+    } 3>&1
 
     if (( status == 0 )); then
         echo " ==== All checksum verified successfully ====" > _CHECKSUM.OK
@@ -21,7 +27,7 @@ _checksum_verify_run() {
         {
             echo "Checksum verification FAILED (exit: $status)"
             echo "----"
-            echo "$output"
+            grep -v ': OK$' <<< "$output"
         } > _CHECKSUM.FAILED
     fi
 
@@ -59,7 +65,7 @@ checksum_verify() {
             "$(declare -f _checksum_verify_run)" "$file")
         sbatch -A "$ACCOUNT" -t 2:00:00 -J checksum_verify <<< "$job"
     else
-        echo "ACCOUNT not set; running locally with bash" >&2
+        echo " > ACCOUNT not set; running locally with bash" >&2
         _checksum_verify_run "$file"
     fi
 }
