@@ -1,12 +1,35 @@
 # Custom shell functions.
 # Sourced by shell/bashrc.sh
 
-# Submit the checksum verification job to Slurm.
-# Usage: checksum_verify <path/to/checksums.md5>
+# Checksum for sequencing files
+# Submit to slurm if sbatch installed and $ACCOUNT set
+# Otherwise, run in bash
 checksum_verify() {
+    local usage="
+ Usage: checksum_verify [-h] <path/to/checksums.md5>
+
+ Verify files against an MD5 checksum list.
+
+ Submits the job via sbatch when ACCOUNT is set (see ~/.dotfiles.local),
+ otherwise runs locally with bash.
+
+ Options:
+   -h, --help    Show this help and exit"
+
+    case "${1:-}" in
+        -h|--help) echo "$usage"; return 0 ;;
+        "") echo "$usage" >&2; return 1 ;;
+    esac
+
     local file="${1:?Usage: checksum_verify <path/to/checksums.md5>}"
-    : "${ACCOUNT:?ACCOUNT not set — edit ~/.dotfiles.local}"
-    sbatch -A "$ACCOUNT" "$HOME/.local/bin/checksum_verify.sh" "$file"
+    local script="$HOME/.local/bin/checksum_verify.sh"
+
+    if [[ -n "${ACCOUNT:-}" ]] && command -v sbatch >/dev/null 2>&1; then
+        sbatch -A "$ACCOUNT" "$script" "$file"
+    else
+        echo "ACCOUNT not set; running locally with bash" >&2
+        bash "$script" "$file"
+    fi
 }
 
 
