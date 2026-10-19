@@ -16,14 +16,6 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo " > Installing dotfiles from: $DOTFILES_DIR"
 
 
-# ---- Create symlinks for custom script from ~/.local/bin --------------------
-
-mkdir -p "$HOME/.local/bin"
-ln -sf "$DOTFILES_DIR/bin/checksum_verify.sh" "$HOME/.local/bin/checksum_verify.sh"
-chmod +x "$DOTFILES_DIR/bin/checksum_verify.sh"
-echo " > Linked checksum_verify.sh into ~/.local/bin"
-
-
 # ---- Create symlinks for config files ---------------------------------------
 
 link_dotfile() {

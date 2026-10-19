@@ -4,31 +4,63 @@
 # Checksum for sequencing files
 # Submit to slurm if sbatch installed and $ACCOUNT set
 # Otherwise, run in bash
+_checksum_verify_run() {
+    local file="$1" output status
+
+    if [[ ! -f "$file" ]]; then
+        echo " > Error: '$file' not found." >&2
+        return 2
+    fi
+
+    output=$(md5sum -c --quiet "$file" 2>&1)
+    status=$?
+
+    if (( status == 0 )); then
+        echo " ==== All checksum verified successfully ====" > _CHECKSUM.OK
+    else
+        {
+            echo "Checksum verification FAILED (exit: $status)"
+            echo "----"
+            echo "$output"
+        } > _CHECKSUM.FAILED
+    fi
+
+    return "$status"
+}
+
 checksum_verify() {
     local usage="
  Usage: checksum_verify [-h] <path/to/checksums.md5>
 
- Verify files against an MD5 checksum list.
+ Verify files against an MD5 checksum list. Writes _CHECKSUM.OK or
+ _CHECKSUM.FAILED to the current directory.
 
  Submits the job via sbatch when ACCOUNT is set (see ~/.dotfiles.local),
  otherwise runs locally with bash.
 
  Options:
-   -h, --help    Show this help and exit"
+   -h, --help       Show this help and exit"
 
     case "${1:-}" in
         -h|--help) echo "$usage"; return 0 ;;
         "") echo "$usage" >&2; return 1 ;;
     esac
 
-    local file="${1:?Usage: checksum_verify <path/to/checksums.md5>}"
-    local script="$HOME/.local/bin/checksum_verify.sh"
+    local file="$1"
 
-    if [[ -n "${ACCOUNT:-}" ]] && command -v sbatch >/dev/null 2>&1; then
-        sbatch -A "$ACCOUNT" "$script" "$file"
+    if [[ ! -f "$file" ]]; then
+        echo " > Error: '$file' not found." >&2
+        return 2
+    fi
+
+    if [[ -n "${ACCOUNT:-}" ]]; then
+        local job
+        job=$(printf '#!/bin/bash -l\n%s\n_checksum_verify_run %q\n' \
+            "$(declare -f _checksum_verify_run)" "$file")
+        sbatch -A "$ACCOUNT" -t 2:00:00 -J checksum_verify <<< "$job"
     else
         echo "ACCOUNT not set; running locally with bash" >&2
-        bash "$script" "$file"
+        _checksum_verify_run "$file"
     fi
 }
 

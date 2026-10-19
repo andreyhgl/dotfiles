@@ -65,12 +65,6 @@ Results appear in the directory the job ran in:
 - `_CHECKSUM.OK`      — all checksums matched
 - `_CHECKSUM.FAILED`  — one or more failed (contains md5sum's output)
 
-Can also be called directly:
-
-```sh
-sbatch -A <account> ~/.local/bin/checksum_verify.sh path/to/checksums.md5
-```
-
 ### Interactive Slurm session
  
 `salloc` is a wrapper for slurm job allocation (in `shell/functions.sh`).
@@ -203,9 +197,6 @@ or restore the backup `install.sh` made:
 ```bash
 cp ~/.bashrc.backup ~/.bashrc
 ```
-
-Then remove the symlink: `rm ~/.local/bin/checksum_verify.sh`
-
 
 
 
