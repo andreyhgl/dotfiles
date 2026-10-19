@@ -9,11 +9,6 @@ _checksum_verify_run() {
 
     if [[ ! -f "$file" ]]; then
         echo " > Error: '$file' not found." >&2
-        return 2_checksum_verify_run() {
-    local file="$1" output status
-
-    if [[ ! -f "$file" ]]; then
-        echo " > Error: '$file' not found." >&2
         return 2
     fi
 
@@ -64,13 +59,13 @@ checksum_verify() {
         return 2
     fi
 
-    if [[ -n "${ACCOUNT:-}" ]]; then
+    if [[ -n "${ACCOUNT:-}" ]] && command -v sbatch >/dev/null 2>&1; then
         local job
         job=$(printf '#!/bin/bash -l\n%s\n_checksum_verify_run %q\n' \
             "$(declare -f _checksum_verify_run)" "$file")
         sbatch -A "$ACCOUNT" -t 2:00:00 -J checksum_verify <<< "$job"
     else
-        echo " > ACCOUNT not set; running locally with bash" >&2
+        echo " > ACCOUNT not set or sbatch not found; running locally with bash" >&2
         _checksum_verify_run "$file"
     fi
 }
