@@ -195,28 +195,32 @@ dotfiles_help() {
 
 Custom commands (see ~/dotfiles):
 ---------------------------------
-    > dotfiles                      show this list
+    ?dotfiles                   show this list
 
     Functions:
-        checksum_verify <file.md5>  submit md5 verification job to Slurm
-        salloc [time] [mem] [cpus]  interactive Slurm session with defaults
+    ---------
+    checksum_verify <file.md5>  submit md5 verification job to Slurm
+    salloc [time] [mem] [cpus]  interactive Slurm session with defaults
             
     Nextflow functions:
-        nflog [run_name]            Nextflow run log (defaults latest run)
-        nfclean [run_name]          detele run work files (defaults latest run)
+    -------------------
+    nflog [run_name]            Nextflow run log (defaults latest run)
+    nfclean [run_name]          detele run work files (defaults latest run)
     
     Git aliases:
-        gc <message...>             git commit -m (no quotes needed)
-        gs ga gd gds                status / add / diff / diff --staged
-        gca gcan                    amend / amend --no-edit
-        gsw gp                      switch / push
-        gpl [dir]                   pull (add 'git -C' if directory given)
-        gl gt gb                    graph log / tags / branches
+    ------------
+    gc <message...>             git commit -m (no quotes needed)
+    gs ga gd gds                status / add / diff / diff --staged
+    gca gcan                    amend / amend --no-edit
+    gsw gp                      switch / push
+    gpl [dir]                   pull (add 'git -C' if directory given)
+    gl gt gb                    graph log / tags / branches
 
     QoL:
-        ll lt la                    long listings (size / time / all)
-        jobinfo jobinfo_full        Slurm jobs / extra info
-        R                           R with --no-save --no-restore
+    ----
+    ll lt la                    long listings (size / time / all)
+    jobinfo jobinfo_full        Slurm jobs / extra info
+    R                           R with --no-save --no-restore
 
 EOF
 }
