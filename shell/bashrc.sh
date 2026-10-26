@@ -81,7 +81,7 @@ unset _dotfiles_shell
 case $- in
     *i*)
         if [ -z "${TMUX:-}" ]; then
-            printf '\n > Type \033[36mdotfiles\033[0m to list custom commands.\n\n'
+            printf '\n > Type \033[36m,dotfiles\033[0m to list custom commands.\n\n'
         fi
         ;;
 esac

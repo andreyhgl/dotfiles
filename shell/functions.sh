@@ -195,7 +195,7 @@ dotfiles_help() {
 
 Custom commands (see ~/dotfiles):
 ---------------------------------
-    ?dotfiles                   show this list
+    ,dotfiles                   show this list
 
     Functions:
     ---------
@@ -225,4 +225,4 @@ Custom commands (see ~/dotfiles):
 EOF
 }
 
-alias '?dotfiles'='dotfiles_help'
+alias ',dotfiles'='dotfiles_help'
