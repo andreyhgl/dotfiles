@@ -98,6 +98,8 @@ salloc() {
     command salloc -A "$ACCOUNT" -t "$time" --mem="$mem" -c "$cpus"
 }
 
+gpl() { git ${1:+-C "$1"} pull; }
+
 gpl() {
     if [ -n "$1" ]; then
         git -C "$1" pull
@@ -188,7 +190,7 @@ nfclean() {
 }
 
 # List the custom commands this dotfiles setup provides.
-dotfiles() {
+dotfiles_help() {
     cat <<'EOF'
 
 Custom commands (see ~/dotfiles):
@@ -198,14 +200,17 @@ Custom commands (see ~/dotfiles):
     Functions:
         checksum_verify <file.md5>  submit md5 verification job to Slurm
         salloc [time] [mem] [cpus]  interactive Slurm session with defaults
+            
+    Nextflow functions:
         nflog [run_name]            Nextflow run log (defaults latest run)
         nfclean [run_name]          detele run work files (defaults latest run)
-
+    
     Git aliases:
         gc <message...>             git commit -m (no quotes needed)
         gs ga gd gds                status / add / diff / diff --staged
         gca gcan                    amend / amend --no-edit
-        gsw gp gpl                  switch / push / pull
+        gsw gp                      switch / push
+        gpl [dir]                   pull (add 'git -C' if directory given)
         gl gt gb                    graph log / tags / branches
 
     QoL:
@@ -215,3 +220,5 @@ Custom commands (see ~/dotfiles):
 
 EOF
 }
+
+alias '?dotfiles'='dotfiles_help'
