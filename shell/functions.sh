@@ -156,8 +156,12 @@ nfclean() {
     echo "--------------------------------"
     echo "$row" | awk -F'\t' '{
         for (i = 1; i <= 4; i++) gsub(/^ +| +$/, "", $i)
-        printf " Run:      %s\n Started:  %s\n Duration: %s\n Status:   %s\n\n",
-            $3, $1, $2, $4
+        fmt = " %8s : %s\n"
+        printf fmt, "Run", $3
+        printf fmt, "Started", $1
+        printf fmt, "Duration", $2
+        printf fmt, "Status", $4
+        print ""
     }'
 
     local changed
