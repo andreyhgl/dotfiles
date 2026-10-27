@@ -172,7 +172,7 @@ nfclean() {
             while IFS=$'\t' read -r hash name status workdir realtime; do
                 [ "$status" = "CACHED" ] && continue
                 local size=$(du -sh "$workdir" 2>/dev/null | cut -f1)
-                printf ' > %10s  %8  %6s  %s\n' \
+                printf ' > %10s  %8s  %6s  %s\n' \
                     "${hash:0:9}" "${realtime}" "${size:--}" "$name"
             done
     )
@@ -181,7 +181,7 @@ nfclean() {
     if [ -n "$changed" ]; then
         echo "$changed"
     else
-        echo "  (none, all tasks were cached)"
+        echo " (none, all tasks were cached)"
     fi
     echo
 
