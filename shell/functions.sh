@@ -172,7 +172,7 @@ nfclean() {
             while IFS=$'\t' read -r hash name status workdir realtime; do
                 [ "$status" = "CACHED" ] && continue
                 local size=$(du -sh "$workdir" 2>/dev/null | cut -f1)
-                printf ' > %10s  %8s  %6s  %s\n' \
+                printf ' > %9s  %8s  %6s  %s\n' \
                     "${hash:0:9}" "${realtime}" "${size:--}" "$name"
             done
     )
