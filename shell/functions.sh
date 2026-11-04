@@ -87,13 +87,14 @@ salloc() {
     # Plain number = GB; allow explicit units like 500M or 1T
     [[ $mem =~ ^[0-9]+$ ]] && mem="${mem}G"
 
-    printf '\n'
-    printf ' ~~ Starting interactive session ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n'
-    printf ' > \e[35mAccount :\e[0m %s\n' "$ACCOUNT"
-    printf ' > \e[35mTime    :\e[0m %s\n' "$time"
-    printf ' > \e[35mMemory  :\e[0m %s\n' "$mem"
-    printf ' > \e[35mCpus    :\e[0m %s\n' "$cpus"
-    printf ' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n'
+    local fmt=' \e[35m%7s\e[0m : %s\n'
+
+    printf '\n ~~ Starting interactive session ~~~~~~~~~~~~~\n'
+    printf "$fmt" "Account" "$ACCOUNT"
+    printf "$fmt" "Time"    "$time"
+    printf "$fmt" "Memory"  "$mem"
+    printf "$fmt" "Cpus"    "$cpus"
+    printf ' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n'
 
     command salloc -A "$ACCOUNT" -t "$time" --mem="$mem" -c "$cpus"
 }
