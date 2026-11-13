@@ -99,7 +99,7 @@ salloc() {
     command salloc -A "$ACCOUNT" -t "$time" --mem="$mem" -c "$cpus"
 }
 
-gpl() { git ${1:+-C "$1"} pull; }
+#gpl() { git ${1:+-C "$1"} pull; }
 
 gpl() {
     if [ -n "$1" ]; then
@@ -122,6 +122,25 @@ _nf_ensure() {
     fi
     # eval lets NEXTFLOW_MODULE hold several modules in bash and zsh
     eval "module load ${NEXTFLOW_MODULE:-nextflow}"
+}
+
+# Print "(Today)" or "(N days ago)" for a YYYY-MM-DD date.
+# Counts calendar days, so last night's run is "1 day ago".
+# Prints nothing if the date can't be parsed.
+_nf_ago() {
+    local d="$1" today then now days
+    today=$(date +%F)
+    # GNU date first, then BSD/macOS date
+    then=$(date -u -d "$d" +%s 2>/dev/null ||
+        date -u -j -f %F "$d" +%s 2>/dev/null) || return 0
+    now=$(date -u -d "$today" +%s 2>/dev/null ||
+        date -u -j -f %F "$today" +%s 2>/dev/null) || return 0
+    days=$(( (now - then) / 86400 ))
+    case "$days" in
+        0) echo "(Today)" ;;
+        1) echo "(1 day ago)" ;;
+        *) echo "($days days ago)" ;;
+    esac
 }
 
 # Show the latest Nextflow run log
@@ -155,12 +174,19 @@ nfclean() {
         echo "No run found: $run" >&2
         return 1
     fi
+
+    local ago
+    ago=$(_nf_ago "$(printf '%s\n' "$row" |
+        awk -F'\t' '{ split($1, a, " "); print a[1] }')")
+
     echo "--------------------------------"
-    echo "$row" | awk -F'\t' '{
+    echo "$row" | awk -F'\t' -v ago="$ago" '{
         for (i = 1; i <= 4; i++) gsub(/^ +| +$/, "", $i)
         fmt = " %8s : %s\n"
+        started = $1
+        if (ago != "") started = started " \033[35m" ago "\033[0m"
         printf fmt, "Run", $3
-        printf fmt, "Started", $1
+        printf fmt, started, "Started"
         printf fmt, "Duration", $2
         printf fmt, "Status", $4
         print ""
