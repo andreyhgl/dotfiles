@@ -9,8 +9,8 @@ checksum_verify() {
  Usage: checksum_verify [-h] <folder | checksums.md5 [more.md5 ...]>
 
  Verify files against MD5 checksum lists. Given a folder, checks every
- .md5 file in it and writes _CHECKSUM.OK or _CHECKSUM.FAILED there.
- Given .md5 files, writes the result to the current directory.
+ .md5 file in it. Writes _CHECKSUM.OK or _CHECKSUM.FAILED to the
+ directory the command ran from.
 
  Submits the job via sbatch when ACCOUNT is set (see ~/.dotfiles.local),
  otherwise runs locally with bash.
@@ -54,6 +54,7 @@ checksum_verify() {
     local job
     job=$(cat <<'EOF'
 #!/bin/bash -l
+out_dir="$PWD"
 cd "$CHECKSUM_DIR" || exit 2
 
 if [[ -n "$CHECKSUM_FILES" ]]; then
@@ -74,13 +75,14 @@ echo " > Checking ${#files[@]} checksum file(s) in $PWD"
 } 3>&1
 
 if (( rc == 0 )); then
-    echo " ==== All checksum verified successfully ====" > _CHECKSUM.OK
+    echo " ==== All checksum verified successfully ====" \
+    > "$out_dir/_CHECKSUM.OK"
 else
     {
         echo "Checksum verification FAILED (exit: $rc)"
         echo "----"
         grep -v ': OK$' <<< "$output"
-    } > _CHECKSUM.FAILED
+    } > "$out_dir/_CHECKSUM.FAILED"
 fi
 
 exit "$rc"
