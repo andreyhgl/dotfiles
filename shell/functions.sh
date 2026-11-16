@@ -6,13 +6,18 @@
 # otherwise run locally with bash. Works when sourced from bash or zsh.
 checksum_verify() {
     local usage="
- Usage: checksum_verify [-h] <path/to/checksums.md5>
+ Usage: checksum_verify [-h] <folder | checksums.md5 [more.md5 ...]>
 
- Verify files against an MD5 checksum list. Writes _CHECKSUM.OK or
- _CHECKSUM.FAILED to the current directory.
+ Verify files against MD5 checksum lists. Given a folder, checks every
+ .md5 file in it and writes _CHECKSUM.OK or _CHECKSUM.FAILED there.
+ Given .md5 files, writes the result to the current directory.
 
  Submits the job via sbatch when ACCOUNT is set (see ~/.dotfiles.local),
  otherwise runs locally with bash.
+
+ Examples:
+   checksum_verify /path/to/delivery                # every .md5 in folder
+   checksum_verify P36012_1021.md5 P36012_1022.md5  # specific .md5 files
 
  Options:
    -h, --help       Show this help and exit"
@@ -22,20 +27,47 @@ checksum_verify() {
         "") echo "$usage" >&2; return 1 ;;
     esac
 
-    local file="$1"
+    local dir="." files=""
 
-    if [[ ! -f "$file" ]]; then
-        echo " > Error: '$file' not found." >&2
-        return 2
+    if [[ $# -eq 1 && -d "$1" ]]; then
+        # Folder mode: the job cd's there and finds the .md5 files itself
+        dir="$1"
+        if [[ -z $(find "$dir" -maxdepth 1 -type f -name '*.md5' | head -n 1) ]]
+        then
+            echo " > Error: no .md5 files in '$dir'." >&2
+            return 2
+        fi
+    else
+        # File mode: one path per line, split back into an array in the job
+        local f
+        for f in "$@"; do
+            if [[ ! -f "$f" ]]; then
+                echo " > Error: '$f' is not a file." >&2
+                echo " > Pass a single folder, or one or more .md5 files." >&2
+                return 2
+            fi
+        done
+        files=$(printf '%s\n' "$@")
     fi
 
-    # Job body: always run by bash, reads the path from $CHECKSUM_FILE
+    # Job body: always run by bash, reads $CHECKSUM_DIR and $CHECKSUM_FILES
     local job
     job=$(cat <<'EOF'
 #!/bin/bash -l
+cd "$CHECKSUM_DIR" || exit 2
+
+if [[ -n "$CHECKSUM_FILES" ]]; then
+    mapfile -t files <<< "$CHECKSUM_FILES"
+else
+    shopt -s nullglob
+    files=(*.md5)
+fi
+
+echo " > Checking ${#files[@]} checksum file(s) in $PWD"
+
 {
     output=$(
-        md5sum -c "$CHECKSUM_FILE" 2>&1 | tee /dev/fd/3
+        md5sum -c "${files[@]}" 2>&1 | tee /dev/fd/3
         exit "${PIPESTATUS[0]}"
     )
     rc=$?
@@ -56,11 +88,12 @@ EOF
     )
 
     if [[ -n "${ACCOUNT:-}" ]] && command -v sbatch >/dev/null 2>&1; then
-        CHECKSUM_FILE="$file" sbatch -A "$ACCOUNT" -t 2:00:00 \
-            -J checksum_verify --export=ALL <<< "$job"
+        CHECKSUM_DIR="$dir" CHECKSUM_FILES="$files" \
+            sbatch -A "$ACCOUNT" -t 2:00:00 -J checksum_verify \
+            --export=ALL <<< "$job"
     else
         echo " > ACCOUNT not set or sbatch not found; running locally" >&2
-        CHECKSUM_FILE="$file" bash <<< "$job"
+        CHECKSUM_DIR="$dir" CHECKSUM_FILES="$files" bash <<< "$job"
     fi
 }
 
