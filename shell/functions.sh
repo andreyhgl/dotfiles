@@ -219,7 +219,7 @@ nfclean() {
         for (i = 1; i <= 4; i++) gsub(/^ +| +$/, "", $i)
         fmt = " %8s : %s\n"
         started = $1
-        if (ago != "") started = " \033[35m" ago "\033[0m" started
+        if (ago != "") started = "\033[35m" ago "\033[0m " started
         printf fmt, "Run", $3
         printf fmt, "Started", started
         printf fmt, "Duration", $2
