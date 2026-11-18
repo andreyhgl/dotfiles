@@ -134,16 +134,6 @@ salloc() {
     command salloc -A "$ACCOUNT" -t "$time" --mem="$mem" -c "$cpus"
 }
 
-#gpl() { git ${1:+-C "$1"} pull; }
-
-gpl() {
-    if [ -n "$1" ]; then
-        git -C "$1" pull
-    else
-        git pull
-    fi
-}
-
 
 #---- Nextflow QoL ------------------------------------------------------------
 
